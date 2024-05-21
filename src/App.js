@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { BrowserRouter } from "react-router-dom";
+import Router from "./router";
+import { useRecoilState } from "recoil";
+import { authenticated } from "./store";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Loading from "./components/Loading";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [auth, setAuth] = useRecoilState(authenticated)
+    const [mounted, setMounted] = useState(false)
+
+    async function getUser() {
+        try {
+            let { data } = await axios.get('/me')
+
+            setAuth({
+                check: true,
+                user: data.data,
+            })
+        } catch (e) {
+            console.log(e);
+        }
+
+        setMounted(true)
+    }
+
+    useEffect(() => {
+        getUser();
+    }, [auth.check, mounted])
+
+    if (!mounted) {
+        return <Loading />
+    }
+
+    return (
+        <BrowserRouter>
+            <Router />
+        </BrowserRouter>
+    )
 }
 
 export default App;

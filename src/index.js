@@ -1,13 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.css'
+import axios from 'axios';
+import { RecoilRoot } from 'recoil';
+
+axios.defaults.baseURL = 'http://127.0.0.1:9000/api';
+axios.interceptors.request.use((config) => {
+  config.headers['Authorization'] = `Bearer ${localStorage.getItem('tokenUser')}`;
+  return config
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
   </React.StrictMode>
 );
 
